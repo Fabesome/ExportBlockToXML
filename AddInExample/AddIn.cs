@@ -32,14 +32,15 @@ namespace AddInExample
             addInRootSubmenu.Items.AddActionItem<FB>("Export Block to XML", OnClick);
             addInRootSubmenu.Items.AddActionItem<FC>("Export Block to XML", OnClick);
             addInRootSubmenu.Items.AddActionItem<DataBlock>("Export Block to XML", OnClick);
+            addInRootSubmenu.Items.AddActionItem<PlcTagTable>("Export List to XML", OnClickTagList);
 
             //Check Menu for DBs
-            addInRootSubmenu.Items.AddActionItem<DataBlock>("Check fault-texts in DB", OnClickCheck);
+            //addInRootSubmenu.Items.AddActionItem<DataBlock>("Check fault-texts in DB", OnClickCheck);
 
 
 
             //addInRootSubmenu.Items.AddActionItem<FB>("Convert to FC", AddInClick);
-            addInRootSubmenu.Items.AddActionItem<IEngineeringObject>("Please select only FBs/FCs/DBs", menuSelectionProvider => { }, InfoTextStatus);
+            addInRootSubmenu.Items.AddActionItem<IEngineeringObject>("Please select only FBs/FCs/DBs/TagLists", menuSelectionProvider => { }, InfoTextStatus);
 
             //Submenu settingsSubmenu = addInRootSubmenu.Items.AddSubmenu("Settings");
             //settingsSubmenu.Items.AddActionItemWithCheckBox<IEngineeringObject>("Check Box", _settings.CheckBoxOnClick, _settings.CheckBoxDisplayStatus);
@@ -63,6 +64,26 @@ namespace AddInExample
                     FileInfo f = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + x.Name + ".xml");
                     //  FileStream fs = new FileStream(fbd.SelectedPath, FileMode.Create);
                     x.Export(f, ExportOptions.WithDefaults | ExportOptions.WithReadOnly);
+            }
+
+        }
+        private void OnClickTagList(MenuSelectionProvider menuSelectionProvider)
+        {
+            // TODO: Replace this with your own on click logic
+
+            string projectName = _tiaPortal.Projects.First(project => project.IsPrimary).Name;
+            List<IEngineeringObject> selectedObjects = menuSelectionProvider.GetSelection<IEngineeringObject>().ToList();
+
+            //FolderBrowserDialog fbd = new FolderBrowserDialog();
+            //fbd.Description = "Select save path";
+            //fbd.ShowDialog();
+
+            foreach (PlcTagTable x in selectedObjects)
+            {
+
+                FileInfo f = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + x.Name + ".xml");
+                //  FileStream fs = new FileStream(fbd.SelectedPath, FileMode.Create);
+                x.Export(f, ExportOptions.None/*, ExportOptions.WithDefaults | ExportOptions.WithReadOnly*/);
             }
 
         }
@@ -92,7 +113,7 @@ namespace AddInExample
 
             foreach (IEngineeringObject engineeringObject in menuSelectionProvider.GetSelection())
             {
-                if (!(engineeringObject.GetType() == menuSelectionProvider.GetSelection().First().GetType() && (engineeringObject is DataBlock)))
+                if (!(engineeringObject.GetType() == menuSelectionProvider.GetSelection().First().GetType() && ((engineeringObject is DataBlock) || (engineeringObject is FB) || (engineeringObject is FC) || (engineeringObject is PlcTagTable))))
                 {
                     show = true;
                     break;
