@@ -60,8 +60,8 @@ namespace AddInExample
             //fbd.ShowDialog();
 
             foreach (PlcBlock x in selectedObjects) {
-
-                    FileInfo f = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + x.Name + ".xml");
+                    string path = @"Z:\SharedVM\";
+                    FileInfo f = new FileInfo(path + x.Name + ".xml");
                     //  FileStream fs = new FileStream(fbd.SelectedPath, FileMode.Create);
                     x.Export(f, ExportOptions.WithDefaults | ExportOptions.WithReadOnly);
             }
